@@ -20,6 +20,8 @@ import java.util.List;
 public class Projeto3D {
     List<String> vertices = new ArrayList<String>();
     List<String> faces = new ArrayList<String>();
+    List<Vet4> matrizVertices = new ArrayList<Vet4>();
+    
     
     public void lerArquivo(){
         try {
@@ -46,18 +48,37 @@ public class Projeto3D {
     }
     
     public void receberVertices(){
-        lerArquivo();
-        int tamanhoV = vertices.size();
-        Ponto[] ponto = new Ponto[tamanhoV];
-        
-        //passa as linhas para a classe ponto para receber o valor de cada ponto
-        for(int i=0; i < tamanhoV; i++){
-            ponto[i].setValores(vertices.get(i));
+        float x, y, z;
+        String parteV[];
+        //Adicioando os vertices lidos, a uma matriz de Vet4
+        for(int i=0; i < vertices.size(); i++){
+            parteV = (vertices.get(i)).split(" ");
+            x = Float.parseFloat(parteV[1]);
+            y = Float.parseFloat(parteV[2]);
+            z = Float.parseFloat(parteV[3]);
+            Vet4 p = new Vet4(x, y, z, 1); // w = 1
+            matrizVertices.add(p);
         }
     }
     
+    /*public void receberFaces(){
+        float f1, f2, f3;
+        String parteV[];
+        //Adicioando os vertices lidos, a uma matriz de Vet4
+        for(int i=0; i < vertices.size(); i++){
+            parteV = (vertices.get(i)).split(" ");
+            f1 = Float.parseFloat(parteV[1]);
+            f2 = Float.parseFloat(parteV[2]);
+            f3 = Float.parseFloat(parteV[3]);
+            Vet4 p = new Vet4(x, y, z, 1); // w = 1
+            matrizVertices.add(p);
+        }
+    }*/
+    
     public static void main(String[] args) {
-        
+        Projeto3D prj = new Projeto3D();
+        prj.lerArquivo();
+        prj.receberVertices();
         
     }
     
