@@ -5,12 +5,18 @@
  */
 package trabalho01;
 
+import java.awt.Color;
+import java.awt.Graphics;
+
 /**
  *
  * @author marcoechevestre
  */
 public class Vet4 {
-    float x, y, z, w;
+    private float x, y, z, w;
+    private int tx = 1; 
+    private int ty = 1; 
+    private int tz = 1;
     
     public Vet4(){
         x = 0;
@@ -18,11 +24,75 @@ public class Vet4 {
         z = 0;
         w = 0;
     }
-    public Vet4(float x, float y, float z, float w){
+
+    public Vet4(float x, float y, float z, float w) {
         this.x = x;
         this.y = y;
         this.z = z;
         this.w = w;
+    }
+
+    public float getX() {
+        return x;
+    }
+
+    public void setX(float x) {
+        this.x = x;
+    }
+
+    public float getY() {
+        return y;
+    }
+
+    public void setY(float y) {
+        this.y = y;
+    }
+
+    public float getZ() {
+        return z;
+    }
+
+    public void setZ(float z) {
+        this.z = z;
+    }
+
+    public float getW() {
+        return w;
+    }
+
+    public void setW(float w) {
+        this.w = w;
+    }
+
+    public int getTx() {
+        return tx;
+    }
+
+    public void setTx(int tx) {
+        this.tx = tx;
+    }
+
+    public int getTy() {
+        return ty;
+    }
+
+    public void setTy(int ty) {
+        this.ty = ty;
+    }
+
+    public int getTz() {
+        return tz;
+    }
+
+    public void setTz(int tz) {
+        this.tz = tz;
+    }
+    
+    
+    public void translacao(){
+        x = x + tx;
+        y = y + ty;
+        z = z + tz;
     }
     
     public double tamanhoVet2(Vet4 a, Vet4 b){

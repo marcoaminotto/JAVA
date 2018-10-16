@@ -8,6 +8,14 @@ package trabalho01;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import static java.lang.Math.round;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 /**
  *
@@ -17,19 +25,98 @@ public class Projeto3D extends javax.swing.JFrame implements Runnable{
 
     private boolean setaUp;
     private boolean setaDown;
+    private boolean setaRight;
+    private boolean setaLeft;
 
+    List<String> vertices = new ArrayList<String>();
+    List<String> faces = new ArrayList<String>();
+    List<Vet4> matrizVertices = new ArrayList<Vet4>();
     /**
      * Creates new form Projeto3D
      */
     public Projeto3D() {
         initComponents();
+        
+        
         createBufferStrategy(2);//permite que um desenho seja feito em um buffer e depois em outro. Tendo uma melhor qualidade
         
         
         Thread t = new Thread(this);
         t.start(); //executa o metodo run()
     }
-
+    
+    
+    //------------------------Meus metodos------------------------------------
+    
+    public void lerArquivo(){
+        try {
+            BufferedReader input = new BufferedReader(new FileReader("LowPolyMill.txt"));
+            String linha = input.readLine();
+            while(linha != null){
+                if(linha.contains("v")){
+                    vertices.add(linha);
+                    System.out.println(linha);
+                }
+                else if(linha.contains("f")){
+                    faces.add(linha);
+                    System.out.println(linha);
+                }
+                linha = input.readLine();
+            }
+            input.close();
+        } catch (FileNotFoundException ex) {
+            System.out.println("Arquivo de sistema não encontrado!");
+        } catch (IOException ex) {
+            System.out.println("Não foi possível abrir o arquivo do sistema");
+        }
+        
+    }
+    
+    public void receberVertices(){
+        float x, y, z;
+        String parteV[];
+        //Adicioando os vertices lidos, a uma matriz de Vet4
+        for(int i=0; i < vertices.size(); i++){
+            parteV = (vertices.get(i)).split(" ");
+            x = Float.parseFloat(parteV[1]);
+            y = Float.parseFloat(parteV[2]);
+            z = Float.parseFloat(parteV[3]);
+            Vet4 p = new Vet4(x, y, z, 1);
+            //System.out.println("teste: "+ round(p.getX()*100) + "," + round(p.getY()*100)+","+round(p.getZ()*100));
+            matrizVertices.add(p);
+        }
+    }
+    
+    /*
+    public void rotacao(){
+        float sx, sy;
+        float angulo;
+        System.out.println("Informe o angulo: ");
+        angulo = scanner.nextFloat();
+        for(int i = 0; i < matrizTranformacao.size(); i++){
+         Ponto r = new Ponto();
+         Ponto p = matrizTranformacao.get(i);
+         r.x = (float) (p.x * Math.cos(angulo) - p.y * Math.sin(angulo));
+         r.y = (float) (p.x * Math.cos(angulo) + p.y * Math.sin(angulo));
+         matrizTranformacao.set(i, r);
+        }
+    }
+    
+    public void escala(){
+        float sx, sy;
+        System.out.println("Informe o Sx e o Sy: ");
+        sx = scanner.nextFloat();
+        sy = scanner.nextFloat();
+        for(int i = 0; i < matrizTranformacao.size(); i++){
+         Ponto r = new Ponto();
+         Ponto p = matrizTranformacao.get(i);
+         r.x = p.x * sx;
+         r.y = p.y * sy;
+         matrizTranformacao.set(i, r);
+        }
+    }
+    */
+    //--------------------------------------------------------------------------
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -73,6 +160,13 @@ public class Projeto3D extends javax.swing.JFrame implements Runnable{
         else if(evt.getKeyCode() == KeyEvent.VK_DOWN){
             setaDown = true;
         }
+        else if(evt.getKeyCode() == KeyEvent.VK_RIGHT){
+            //ADICIONAR O DE TRANSLACAO
+            setaRight = true;
+        }
+        else if(evt.getKeyCode() == KeyEvent.VK_LEFT){
+            setaLeft = true;
+        }
         
         
     }//GEN-LAST:event_formKeyPressed
@@ -80,11 +174,14 @@ public class Projeto3D extends javax.swing.JFrame implements Runnable{
     private void formKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyReleased
         
         if(evt.getKeyCode() == KeyEvent.VK_UP){
-            //ADICIONAR O DE TRANSLACAO
             setaUp = false;
         }
         else if(evt.getKeyCode() == KeyEvent.VK_DOWN){
             setaDown = false;
+        }else if(evt.getKeyCode() == KeyEvent.VK_RIGHT){
+            setaRight = false;
+        }else if(evt.getKeyCode() == KeyEvent.VK_LEFT){
+            setaLeft = false;
         }
         
     }//GEN-LAST:event_formKeyReleased
@@ -126,30 +223,119 @@ public class Projeto3D extends javax.swing.JFrame implements Runnable{
 
     @Override
     public void run() {
-        
         Graphics g;
+        lerArquivo();
+        receberVertices();
         
+        int f1, f2, f3;
         int x = 500;
         int y = 500;
+        //Adicioando os vertices lidos, a uma matriz de Vet4
+        
+        
+        /*for(int i=0; i < faces.size(); i++){
+            parteF = (faces.get(0)).split(" ");
+            f1 = Integer.parseInt(parteF[1]);
+            f2 = Integer.parseInt(parteF[2]);
+            f3 = Integer.parseInt(parteF[3]);
+            
+            Vet4 p1 = matrizVertices.get(f1);
+            Vet4 p2 = matrizVertices.get(f2);
+            Vet4 p3 = matrizVertices.get(f3);
+
+            g.drawLine(round(p1.x*100), round(p1.y*100), round(p2.x*100), round(p2.y*100));
+            g.drawLine(round(p2.x*100), round(p2.y*100), round(p3.x*100), round(p3.y*100));
+            g.drawLine(round(p3.x*100), round(p3.y*100), round(p1.x*100), round(p1.y*100));
+            System.out.println("ENTRO");
+        }*/
         
         while(true){
-            g = getBufferStrategy().getDrawGraphics();//primeiro passa para o buffer e depois para a placa de video     
-           
-            g.setColor(Color.WHITE);
             
+            g = getBufferStrategy().getDrawGraphics();//primeiro passa para o buffer e depois para a placa de video     
+            g.setColor(Color.WHITE);
             g.fillRect(0, 0, getWidth(), getHeight()); //pintamos um retangulo branco que vai da posição (0,0) até a posição (800,800), preenchendo toda a imagem
            
             g.setColor(Color.BLACK);
-            g.drawLine(0, 0, x, y);
-           
+           //TRANSLACAO DO OBJETO, adicionando os tx,ty,tz
             if(setaUp){
-                y--;
-            }else if(setaDown){
-                    y++;
+                for(int i=0; i < matrizVertices.size(); i++){
+                    Vet4 v;
+                    v = matrizVertices.get(i);
+                    v.setTy(-1);
+                    matrizVertices.set(i, v);
+                } 
+            }else if(setaDown){ 
+                for(int i=0; i < matrizVertices.size(); i++){
+                    Vet4 v;
+                    v = matrizVertices.get(i);
+                    v.setTy(1);
+                    matrizVertices.set(i, v);
+                } 
+            }else{
+                for(int i=0; i < matrizVertices.size(); i++){
+                    Vet4 v;
+                    v = matrizVertices.get(i);
+                    v.setTy(0);
+                    matrizVertices.set(i, v);
+                } 
             }
-            g.dispose();
             
+            if(setaRight){
+                for(int i=0; i < matrizVertices.size(); i++){
+                    Vet4 v;
+                    v = matrizVertices.get(i);
+                    v.setTx(1);
+                    matrizVertices.set(i, v);
+                }
+            }else if(setaLeft){
+                for(int i=0; i < matrizVertices.size(); i++){
+                    Vet4 v;
+                    v = matrizVertices.get(i);
+                    v.setTx(-1);
+                    matrizVertices.set(i, v);
+                } 
+            }else{
+                for(int i=0; i < matrizVertices.size(); i++){
+                    Vet4 v;
+                    v = matrizVertices.get(i);
+                    v.setTx(0);
+                    matrizVertices.set(i, v);
+                } 
+            }
+            //execucao do metodo de translacao
+            for(int i=0; i < matrizVertices.size(); i++){
+                Vet4 v;
+                v = matrizVertices.get(i);
+                v.translacao();
+                matrizVertices.set(i, v);
+            }
+            //desenhar
+            //System.out.println(faces.size());
+            for(int i=0; i < 1604; i++){
+                String parteF[];
+                parteF = (faces.get(i)).split(" ");
+                f1 = Integer.parseInt(parteF[1]);
+                f2 = Integer.parseInt(parteF[2]);
+                f3 = Integer.parseInt(parteF[3]);
+            
+                Vet4 p1 = matrizVertices.get(f1);
+                Vet4 p2 = matrizVertices.get(f2);
+                Vet4 p3 = matrizVertices.get(f3);
+
+                g.drawLine(round(p1.getX()*500), round(p1.getY()*500), round(p2.getX()*500), round(p2.getY()*500));
+                g.drawLine(round(p2.getX()*500), round(p2.getY()*500), round(p3.getX()*500), round(p3.getY()*500));
+                g.drawLine(round(p3.getX()*500), round(p3.getY()*500), round(p1.getX()*500), round(p1.getY()*500));
+            }
+            
+            g.dispose();
             getBufferStrategy().show();
+            
+            try{
+                Thread.sleep(100);
+            }catch(InterruptedException ex){
+            
+             }
+            
         }
     }
 
